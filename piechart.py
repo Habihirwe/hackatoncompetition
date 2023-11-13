@@ -2,6 +2,11 @@ import pandas as pd
 from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import dash_bootstrap_components as dbc
+from practices import layout
+from table_14 import layout_14
+from app import app
+from table_39 import layout_39
+from table_61 import layout_61
 
 # Load your data from the Excel file
 data = pd.read_excel("SAS 2022_Tables.xlsx", sheet_name="Table 1", skiprows=2)
@@ -9,30 +14,34 @@ df = pd.DataFrame(data)
 df = df.drop(df.index[-1:])
 df = df.drop(columns=['Unnamed: 0'])
 # Create a Dash app
-app = Dash(__name__)
+# app = Dash(__name__)
 
 # Define the app layout
-app.layout = html.Div([
-    html.H1("Pie Chart from Excel Data"),
-
-    dcc.Graph(
-        id='pie-chart',
-        config={'displayModeBar': False},
-        style={
-            'width': '40%',  # Adjust the width to control the size
-            'float': 'left',  # Float the graph to the left side
-            'margin-left': '20px',  # Adjust the left margin
-            'margin-top': '20px',  # Adjust the top margin
-        }
-    ),
-
-    dbc.Button("DataFrame", id="show-data-button", color="primary", className="mr-1"),
-    html.Div(id="data-display"),
-    
-    dcc.Store(id='data-store', data=df.to_json(orient='split')),
-    dcc.Store(id='display-data', data=True)
-])
-
+pielayout = [
+    html.Div([
+        html.H1("Rwanda Land Cover classes"),
+        html.Div([
+            dcc.Graph(
+                id='pie-chart',
+                config={'displayModeBar': False},
+                style={
+                    # "min-height": "400px",
+                    "height": "100%",
+                    # 'width': '40%',  # Adjust the width to control the size
+                    # 'float': 'left',  # Float the graph to the left side
+                    'margin-top': '20px',  # Adjust the top margin
+                }
+            ),
+            html.Div([
+                dbc.Button("DataFrame", id="show-data-button", color="primary", className="mr-1"),
+                html.Div(id="data-display"),
+                
+                dcc.Store(id='data-store', data=df.to_json(orient='split')),
+                dcc.Store(id='display-data', data=True), 
+            ])
+        ], style={'display': 'flex', "flex-direction": "row", }),
+    ])
+]
 # Define a callback function to update the pie chart
 @app.callback(
     Output('pie-chart', 'figure'),

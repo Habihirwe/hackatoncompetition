@@ -3,6 +3,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.express as px
+from app import app
 
 # Provided data for Improved Seed
 farmers_protect_landerrosion_data = {
@@ -61,33 +62,55 @@ merged_df = pd.merge(merged_df, practiced_agroforestry_df, on='District')
 # Reshape the DataFrame for nested bar chart
 nested_df = pd.melt(merged_df, id_vars='District', var_name='Indicator', value_name='Value')
 
-# Dash app
-app = dash.Dash(__name__)
+layout = [
+    html.Div([
+        html.H1("Percentage of Farmers by Agricultural practices"),
 
-# Define app layout
-app.layout = html.Div([
-    html.H1("Farmers Agricultural Practices"),
+        # Dropdown for selecting data
+        dcc.Dropdown(
+            id='data-dropdown',
+            options=[
+                {'label': 'Farmers Against Erosion', 'value': 'Farmers against erosion'},
+                {'label': 'Mechanical Equipment', 'value': 'Mechanical equipment'},
+                {'label': 'Practiced Irrigation', 'value': 'Practiced irrigation'},
+                {'label': 'Practiced Agroforestry', 'value': 'Practiced agroforestry'}
+            ],
+            value='Farmers against erosion',
+            style={'width': '50%'}
+        ),
 
-    # Dropdown for selecting data
-    dcc.Dropdown(
-        id='data-dropdown',
-        options=[
-            {'label': 'Farmers Against Erosion', 'value': 'Farmers against erosion'},
-            {'label': 'Mechanical Equipment', 'value': 'Mechanical equipment'},
-            {'label': 'Practiced Irrigation', 'value': 'Practiced irrigation'},
-            {'label': 'Practiced Agroforestry', 'value': 'Practiced agroforestry'}
-        ],
-        value='Farmers against erosion',
-        style={'width': '50%'}
-    ),
+        # Graph
+        dcc.Graph(id='agricultural-graphh')
+    ])
+]
 
-    # Graph
-    dcc.Graph(id='agricultural-graph')
-])
+# # Dash app
+# app = dash.Dash(__name__)
+
+# # Define app layout
+# app.layout = html.Div([
+#     html.H1("Farmers Agricultural Practices"),
+
+#     # Dropdown for selecting data
+#     dcc.Dropdown(
+#         id='data-dropdown',
+#         options=[
+#             {'label': 'Farmers Against Erosion', 'value': 'Farmers against erosion'},
+#             {'label': 'Mechanical Equipment', 'value': 'Mechanical equipment'},
+#             {'label': 'Practiced Irrigation', 'value': 'Practiced irrigation'},
+#             {'label': 'Practiced Agroforestry', 'value': 'Practiced agroforestry'}
+#         ],
+#         value='Farmers against erosion',
+#         style={'width': '50%'}
+#     ),
+
+#     # Graph
+#     dcc.Graph(id='agricultural-graph')
+# ])
 
 # Define callback to update graph based on dropdown selection
 @app.callback(
-    Output('agricultural-graph', 'figure'),
+    Output('agricultural-graphh', 'figure'),
     [Input('data-dropdown', 'value')]
 )
 def update_graph(selected_data):
@@ -104,7 +127,5 @@ def update_graph(selected_data):
                  height=600)
 
     return fig
-
-# Run the app
 if __name__ == '__main__':
     app.run_server(debug=True)

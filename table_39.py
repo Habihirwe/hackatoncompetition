@@ -3,6 +3,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.express as px
+from app import app
 
 
 # The provided data for Improved Seed
@@ -54,32 +55,53 @@ merged_df = pd.merge(merged_df, farmers_organic_fertilizer_df, on='District')
 nested_df = pd.melt(merged_df, id_vars='District', var_name='Indicator', value_name='Value')
 
 # Dash app
-app = dash.Dash(__name__)
+# app = dash.Dash(__name__)
+
+layout_39 = [
+    html.Div([
+        html.H1("Season B 2022 use of organic fertilizers by farmer category",style={'font-weight':'bold', 'font-size':'30px'}),
+        
+        # Dropdown for selecting data
+        dcc.Dropdown(
+            id='data-dropdownn',
+            options=[
+                {'label': 'Improved Seed', 'value': 'Improved Seed'},
+                {'label': 'Organic Fertilizer', 'value': 'Organic Fertilizer'},
+                {'label': 'Farmers Applied Organic Fertilizer', 'value': 'Farmers Applied Organic Fertilizer'},
+            ],
+            value='Improved Seed',
+            style={'width': '50%'}
+        ),
+        
+        # Graph
+        dcc.Graph(id='agricultural-graph')
+    ])
+]
 
 # Define app layout
-app.layout = html.Div([
-    html.H1("Agricultural Data Visualization"),
+# app.layout = html.Div([
+#     html.H1("Agricultural Data Visualization"),
     
-    # Dropdown for selecting data
-    dcc.Dropdown(
-        id='data-dropdown',
-        options=[
-            {'label': 'Improved Seed', 'value': 'Improved Seed'},
-            {'label': 'Organic Fertilizer', 'value': 'Organic Fertilizer'},
-            {'label': 'Farmers Applied Organic Fertilizer', 'value': 'Farmers Applied Organic Fertilizer'},
-        ],
-        value='Improved Seed',
-        style={'width': '50%'}
-    ),
+#     # Dropdown for selecting data
+#     dcc.Dropdown(
+#         id='data-dropdown',
+#         options=[
+#             {'label': 'Improved Seed', 'value': 'Improved Seed'},
+#             {'label': 'Organic Fertilizer', 'value': 'Organic Fertilizer'},
+#             {'label': 'Farmers Applied Organic Fertilizer', 'value': 'Farmers Applied Organic Fertilizer'},
+#         ],
+#         value='Improved Seed',
+#         style={'width': '50%'}
+#     ),
     
-    # Graph
-    dcc.Graph(id='agricultural-graph')
-])
+#     # Graph
+#     dcc.Graph(id='agricultural-graph')
+# ])
 
 # Define callback to update graph based on dropdown selection
 @app.callback(
     Output('agricultural-graph', 'figure'),
-    [Input('data-dropdown', 'value')]
+    [Input('data-dropdownn', 'value')]
 )
 def update_graph(selected_data):
     # Determine the appropriate DataFrame based on the selected data
